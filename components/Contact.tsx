@@ -30,10 +30,10 @@ export default function Contact() {
                 href={link.href}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noreferrer" : undefined}
-                className="focus-ring group flex items-center justify-between rounded-xl border border-ink-line bg-ink/60 px-5 py-4 transition-colors hover:border-mint/40"
+                className="focus-ring group flex items-center justify-between rounded-xl border border-ink-line bg-ink/60 px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-mint/50 hover:shadow-[0_0_30px_-12px_#2DD4EE]"
               >
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-mint">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-ink-line bg-ink text-mint transition-all duration-300 group-hover:border-mint group-hover:shadow-[0_0_18px_-3px_#2DD4EE]">
                     <link.icon size={17} />
                   </span>
                   <div>

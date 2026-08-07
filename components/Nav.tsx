@@ -19,7 +19,7 @@ export default function Nav() {
             <a
               key={link.href}
               href={link.href}
-              className="focus-ring rounded text-sm text-muted transition-colors hover:text-ivory"
+              className="focus-ring relative rounded text-sm text-muted transition-colors hover:text-ivory after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-mint after:transition-all after:duration-300 hover:after:w-full"
             >
               {link.label}
             </a>
@@ -28,7 +28,7 @@ export default function Nav() {
 
         <a
           href="#contact"
-          className="focus-ring hidden rounded-full bg-ivory px-4 py-2 text-sm font-semibold text-ink transition-transform hover:scale-[1.03] md:inline-block"
+          className="focus-ring hidden rounded-full bg-ivory px-4 py-2 text-sm font-semibold text-ink transition-all hover:scale-[1.03] hover:shadow-[0_0_24px_-6px_#2DD4EE] md:inline-block"
         >
           Let&rsquo;s talk
         </a>

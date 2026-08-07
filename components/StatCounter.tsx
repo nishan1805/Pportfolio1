@@ -46,7 +46,7 @@ export default function StatCounter({
   return (
     <div
       ref={ref}
-      className="rounded-2xl border border-ink-line bg-ink-soft/30 p-6 transition-colors hover:border-mint/40"
+      className="rounded-2xl border border-ink-line bg-ink-soft/30 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-mint/40 hover:shadow-[0_0_30px_-14px_#2DD4EE]"
     >
       <div className="font-display text-4xl font-extrabold text-ivory">
         {count}

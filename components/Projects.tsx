@@ -14,7 +14,7 @@ export default function Projects() {
           {projects.map((project) => (
             <div
               key={project.name}
-              className="overflow-hidden rounded-2xl border border-ink-line bg-ink-soft/30 transition-colors hover:border-mint/40"
+              className="group overflow-hidden rounded-2xl border border-ink-line bg-ink-soft/30 transition-all duration-300 hover:-translate-y-1 hover:border-mint/40 hover:shadow-[0_20px_40px_-20px_rgba(45,212,238,0.35)]"
             >
               <div className={`flex h-40 items-center justify-center bg-gradient-to-br ${project.gradient}`}>
                 <h3 className="font-display text-2xl font-bold text-white">{project.name}</h3>

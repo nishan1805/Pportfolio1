@@ -1,8 +1,40 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import { experience } from "@/lib/data";
 import { iconMap } from "@/lib/icons";
 import { Flag as FlagIcon, MapPin as MapPinIcon } from "lucide-react";
 
 export default function Experience() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [fillHeight, setFillHeight] = useState(0);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = Number((entry.target as HTMLElement).dataset.index);
+            const node = nodeRefs.current[idx];
+            const container = containerRef.current;
+            if (node && container) {
+              const nodeRect = node.getBoundingClientRect();
+              const containerRect = container.getBoundingClientRect();
+              const offset = nodeRect.top + nodeRect.height / 2 - containerRect.top;
+              setFillHeight((prev) => Math.max(prev, offset));
+            }
+          }
+        });
+      },
+      { threshold: 0.5, rootMargin: "0px 0px -10% 0px" }
+    );
+
+    const els = nodeRefs.current;
+    els.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section id="experience" className="border-t border-ink-line py-28">
       <div className="mx-auto max-w-6xl px-6 md:px-10">
@@ -11,19 +43,24 @@ export default function Experience() {
           The road so far.
         </h2>
 
-        <div className="relative mt-20">
-          {/* center timeline line — desktop only */}
+        <div ref={containerRef} className="relative mt-20">
+          {/* base dashed line — always present */}
           <div className="pointer-events-none absolute bottom-0 left-1/2 top-0 hidden w-px -translate-x-1/2 border-l border-dashed border-ink-line md:block" />
+
+          {/* glowing fill line — grows as milestones scroll into view */}
           <div
-            className="pointer-events-none absolute left-1/2 top-0 hidden h-24 w-px -translate-x-1/2 md:block"
-            style={{ background: "linear-gradient(to bottom, #2DD4EE, transparent)" }}
+            className="pointer-events-none absolute left-1/2 top-0 hidden w-px -translate-x-1/2 bg-mint transition-[height] duration-700 ease-out md:block"
+            style={{
+              height: `${fillHeight}px`,
+              boxShadow: "0 0 10px 1px #2DD4EE, 0 0 28px 4px rgba(45,212,238,0.45)",
+            }}
           />
 
-          {/* START flag */}
+          {/* PRESENT flag — top of timeline */}
           <div className="relative mb-14 hidden justify-center md:flex">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-ink-line bg-ink px-3 py-1.5 text-mono-label text-xs uppercase text-mint">
               <FlagIcon size={13} />
-              Start
+              Present
             </span>
           </div>
 
@@ -34,7 +71,7 @@ export default function Experience() {
               const isCurrent = role.status === "Present";
 
               const card = (
-                <div className="rounded-2xl border border-ink-line bg-ink-soft/30 p-7">
+                <div className="rounded-2xl border border-ink-line bg-ink-soft/30 p-7 transition-all duration-300 hover:border-mint/40 hover:shadow-[0_0_40px_-16px_#2DD4EE]">
                   <div className="flex flex-wrap items-center gap-3">
                     <p className="text-mono-label text-xs uppercase text-mint">Milestone {role.milestone}</p>
                     {role.status && (
@@ -84,9 +121,15 @@ export default function Experience() {
                   </div>
 
                   <div className="hidden md:block">{isLeft && card}</div>
-                  <div className="hidden justify-self-center md:flex">
+                  <div
+                    ref={(el) => {
+                      nodeRefs.current[i] = el;
+                    }}
+                    data-index={i}
+                    className="hidden justify-self-center md:flex"
+                  >
                     <span
-                      className={`flex h-12 w-12 items-center justify-center rounded-full border bg-ink ${
+                      className={`flex h-12 w-12 items-center justify-center rounded-full border bg-ink transition-all duration-300 ${
                         isCurrent ? "border-mint text-mint shadow-[0_0_24px_-4px_#2DD4EE]" : "border-ink-line text-muted"
                       }`}
                     >
@@ -99,11 +142,11 @@ export default function Experience() {
             })}
           </div>
 
-          {/* NOW flag */}
+          {/* START flag — bottom of timeline, where the career began */}
           <div className="relative mt-14 hidden justify-center md:flex">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-ink-line bg-ink px-3 py-1.5 text-mono-label text-xs uppercase text-mint">
               <MapPinIcon size={13} />
-              Now
+              Start
             </span>
           </div>
         </div>

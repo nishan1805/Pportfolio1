@@ -29,7 +29,7 @@ export default function About() {
               {aboutPillars.map((pillar) => {
                 const Icon = icons[pillar.title as keyof typeof icons];
                 return (
-                  <div key={pillar.title} className="rounded-xl border border-ink-line bg-ink/60 p-5">
+                  <div key={pillar.title} className="rounded-xl border border-ink-line bg-ink/60 p-5 transition-all duration-300 hover:border-mint/40 hover:shadow-[0_0_24px_-12px_#2DD4EE]">
                     <Icon size={18} className="text-mint" />
                     <h3 className="mt-3 font-display text-base font-semibold text-ivory">{pillar.title}</h3>
                     <p className="mt-1.5 text-sm leading-relaxed text-muted">{pillar.body}</p>

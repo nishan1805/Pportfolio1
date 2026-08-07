@@ -13,6 +13,13 @@ export const profile = {
   resumeUrl: "#", // TODO: replace with your hosted resume PDF URL
 };
 
+export const heroRoles = [
+  "Senior Full Stack Developer",
+  "React & Next.js Specialist",
+  "Node.js & Frappe Engineer",
+  "Enterprise Product Builder",
+];
+
 export const stats = [
   { label: "Years Experience", value: 3, suffix: "+" },
   { label: "Projects Delivered", value: 15, suffix: "+" },
