@@ -41,10 +41,23 @@ export default function TypewriterRole() {
     return () => clearTimeout(timeout);
   }, [text, phase, roleIndex]);
 
+  // reserve space sized to the longest role up front, so the box never
+  // resizes as characters are typed/deleted — nothing below it has to
+  // shift around while the animation runs
+  const longestRole = heroRoles.reduce((a, b) => (b.length > a.length ? b : a), "");
+
   return (
-    <p className="mt-3 flex items-center text-2xl font-semibold text-mint sm:text-3xl">
-      <span>{text}</span>
-      <span className="ml-1 inline-block h-[1em] w-[2px] animate-pulse bg-mint align-middle" />
-    </p>
+    <div className="relative mt-3 text-2xl font-semibold sm:text-3xl">
+      {/* invisible sizer — establishes fixed width/height, never changes */}
+      <p aria-hidden="true" className="invisible flex items-center">
+        <span>{longestRole}</span>
+        <span className="ml-1 inline-block h-[1em] w-[2px]" />
+      </p>
+      {/* actual animated text, laid on top of the reserved space */}
+      <p className="absolute inset-0 flex items-center text-mint">
+        <span>{text}</span>
+        <span className="ml-1 inline-block h-[1em] w-[2px] animate-pulse bg-mint align-middle" />
+      </p>
+    </div>
   );
 }

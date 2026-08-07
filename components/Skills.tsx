@@ -17,7 +17,7 @@ export default function Skills() {
             return (
               <div
                 key={group.name}
-                className="relative overflow-hidden rounded-2xl border border-ink-line bg-ink-soft/30 p-7"
+                className="relative overflow-hidden rounded-2xl border border-ink-line bg-ink-soft/30 p-7 transition-all duration-300 hover:-translate-y-0.5 hover:border-muted/40 hover:bg-ink-soft/50"
               >
                 <div
                   className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full opacity-20 blur-3xl"

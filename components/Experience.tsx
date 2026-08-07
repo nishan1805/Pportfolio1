@@ -7,7 +7,11 @@ import { Flag as FlagIcon, MapPin as MapPinIcon } from "lucide-react";
 
 export default function Experience() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const iconRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const [fillHeight, setFillHeight] = useState(0);
+  // vertical offset (from container top) of each timeline icon's center —
+  // the fill line "touches" an icon once fillHeight reaches its offset
+  const [iconOffsets, setIconOffsets] = useState<number[]>([]);
 
   useEffect(() => {
     let ticking = false;
@@ -39,6 +43,36 @@ export default function Experience() {
     return () => {
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    // measure where each icon actually sits relative to the container —
+    // this only needs to run on mount/resize since icon and container
+    // scroll together (their relative offset doesn't change on scroll)
+    const measure = () => {
+      const containerEl = containerRef.current;
+      if (!containerEl) return;
+      const containerRect = containerEl.getBoundingClientRect();
+      const offsets = iconRefs.current.map((iconEl) => {
+        if (!iconEl) return Infinity;
+        const r = iconEl.getBoundingClientRect();
+        // hidden (display:none) elements report a zero-size rect — ignore those
+        if (r.width === 0 && r.height === 0) return Infinity;
+        return r.top - containerRect.top + r.height / 2;
+      });
+      setIconOffsets(offsets);
+    };
+
+    measure();
+    // re-measure shortly after mount too — swapped-in webfonts can reflow
+    // the layout slightly after the first paint, which would otherwise
+    // leave the icon offsets very slightly stale until the next resize
+    const settleTimeout = setTimeout(measure, 300);
+    window.addEventListener("resize", measure);
+    return () => {
+      clearTimeout(settleTimeout);
+      window.removeEventListener("resize", measure);
     };
   }, []);
 
@@ -75,7 +109,12 @@ export default function Experience() {
             {experience.map((role, i) => {
               const Icon = iconMap[role.icon];
               const isLeft = i % 2 === 0;
+              // mobile compact icon has no visible line to react to, so it just
+              // reflects the role's own "Present" status as before
               const isCurrent = role.status === "Present";
+              // desktop icon glows only once the animated line has actually
+              // reached it, and turns back off if you scroll back above it
+              const isActive = fillHeight >= (iconOffsets[i] ?? Infinity);
 
               const card = (
                 <div className="rounded-2xl border border-ink-line bg-ink-soft/30 p-7 transition-all duration-300 hover:border-mint/40 hover:shadow-[0_0_40px_-16px_#2DD4EE]">
@@ -130,8 +169,11 @@ export default function Experience() {
                   <div className="hidden md:block">{isLeft && card}</div>
                   <div className="hidden justify-self-center md:flex">
                     <span
+                      ref={(el) => {
+                        iconRefs.current[i] = el;
+                      }}
                       className={`flex h-12 w-12 items-center justify-center rounded-full border bg-ink transition-all duration-300 ${
-                        isCurrent ? "border-mint text-mint shadow-[0_0_24px_-4px_#2DD4EE]" : "border-ink-line text-muted"
+                        isActive ? "border-mint text-mint shadow-[0_0_24px_-4px_#2DD4EE]" : "border-ink-line text-muted"
                       }`}
                     >
                       <Icon size={20} />
