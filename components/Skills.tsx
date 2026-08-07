@@ -17,10 +17,10 @@ export default function Skills() {
             return (
               <div
                 key={group.name}
-                className="group relative overflow-hidden rounded-2xl border border-ink-line bg-ink-soft/30 p-7 transition-all duration-300 hover:border-mint/40 hover:shadow-[0_0_40px_-12px_#2DD4EE]"
+                className="relative overflow-hidden rounded-2xl border border-ink-line bg-ink-soft/30 p-7"
               >
                 <div
-                  className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full opacity-20 blur-3xl transition-opacity duration-300 group-hover:opacity-40"
+                  className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full opacity-20 blur-3xl"
                   style={{ background: "radial-gradient(circle, #2DD4EE, transparent 70%)" }}
                 />
                 <div className="relative mb-6 flex items-start justify-between">

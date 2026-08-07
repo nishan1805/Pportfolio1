@@ -7,32 +7,39 @@ import { Flag as FlagIcon, MapPin as MapPinIcon } from "lucide-react";
 
 export default function Experience() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [fillHeight, setFillHeight] = useState(0);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = Number((entry.target as HTMLElement).dataset.index);
-            const node = nodeRefs.current[idx];
-            const container = containerRef.current;
-            if (node && container) {
-              const nodeRect = node.getBoundingClientRect();
-              const containerRect = container.getBoundingClientRect();
-              const offset = nodeRect.top + nodeRect.height / 2 - containerRect.top;
-              setFillHeight((prev) => Math.max(prev, offset));
-            }
-          }
-        });
-      },
-      { threshold: 0.5, rootMargin: "0px 0px -10% 0px" }
-    );
+    let ticking = false;
 
-    const els = nodeRefs.current;
-    els.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
+    const compute = () => {
+      const el = containerRef.current;
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const triggerY = window.innerHeight * 0.55;
+        // progress reaches 1 exactly when the container's bottom (the START flag)
+        // passes the trigger line, and 0 when its top hasn't reached it yet —
+        // scrolling back up shrinks it right back down.
+        const progress = Math.min(Math.max((triggerY - rect.top) / rect.height, 0), 1);
+        setFillHeight(progress * rect.height);
+      }
+      ticking = false;
+    };
+
+    const onScrollOrResize = () => {
+      if (!ticking) {
+        requestAnimationFrame(compute);
+        ticking = true;
+      }
+    };
+
+    compute();
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
+    };
   }, []);
 
   return (
@@ -47,9 +54,9 @@ export default function Experience() {
           {/* base dashed line — always present */}
           <div className="pointer-events-none absolute bottom-0 left-1/2 top-0 hidden w-px -translate-x-1/2 border-l border-dashed border-ink-line md:block" />
 
-          {/* glowing fill line — grows as milestones scroll into view */}
+          {/* glowing fill line — tracks scroll position exactly, both directions */}
           <div
-            className="pointer-events-none absolute left-1/2 top-0 hidden w-px -translate-x-1/2 bg-mint transition-[height] duration-700 ease-out md:block"
+            className="pointer-events-none absolute left-1/2 top-0 hidden w-px -translate-x-1/2 bg-mint md:block"
             style={{
               height: `${fillHeight}px`,
               boxShadow: "0 0 10px 1px #2DD4EE, 0 0 28px 4px rgba(45,212,238,0.45)",
@@ -121,13 +128,7 @@ export default function Experience() {
                   </div>
 
                   <div className="hidden md:block">{isLeft && card}</div>
-                  <div
-                    ref={(el) => {
-                      nodeRefs.current[i] = el;
-                    }}
-                    data-index={i}
-                    className="hidden justify-self-center md:flex"
-                  >
+                  <div className="hidden justify-self-center md:flex">
                     <span
                       className={`flex h-12 w-12 items-center justify-center rounded-full border bg-ink transition-all duration-300 ${
                         isCurrent ? "border-mint text-mint shadow-[0_0_24px_-4px_#2DD4EE]" : "border-ink-line text-muted"
